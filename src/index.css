@@ -46,6 +46,7 @@
     --wellness-calm: 202 84% 85%; /* soft blue */
     --wellness-success: 142 71% 65%; /* soft green */
     --wellness-warning: 38 92% 75%; /* warm orange */
+    --wellness-danger: 0 72% 51%; /* #db2727 for SOS */
 
     /* Gradients */
     --gradient-primary: linear-gradient(
@@ -107,7 +108,7 @@
     --accent: 174 56% 65%; /* teal accent */
     --accent-foreground: 226 71% 8%;
 
-    --destructive: 0 75% 55%;
+    --destructive: 0 72% 51%; /* Use new danger color */
     --destructive-foreground: 0 0% 98%;
 
     --border: 226 40% 20%;
@@ -200,5 +201,23 @@
   /* Loading pulse animation */
   .loading-pulse {
     @apply animate-pulse bg-muted/50 rounded;
+  }
+}
+
+@layer utilities {
+  @keyframes pulse-sos {
+    0%,
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 hsl(var(--wellness-danger) / 0.7);
+    }
+    50% {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px 10px hsl(var(--wellness-danger) / 0);
+    }
+  }
+
+  .animate-pulse-sos {
+    animation: pulse-sos 2s infinite;
   }
 }

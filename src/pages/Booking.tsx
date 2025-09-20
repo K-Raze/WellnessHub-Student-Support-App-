@@ -8,7 +8,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Navbar } from "@/components/navbar"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Clock, MapPin, Star, Calendar as CalendarIcon, User } from "lucide-react"
+import { Clock, MapPin, Star, Calendar as CalendarIcon, User, ArrowLeft } from "lucide-react"
 
 interface Counselor {
   id: string
@@ -26,6 +26,7 @@ interface TimeSlot {
 }
 
 export default function Booking() {
+  const [step, setStep] = useState(1) // 1: Select Counselor, 2: Select Time, 3: Summary
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [selectedCounselor, setSelectedCounselor] = useState<Counselor | null>(null)
   const [selectedTime, setSelectedTime] = useState<string>("")
@@ -68,6 +69,24 @@ export default function Booking() {
     { time: "03:30 PM", available: false },
     { time: "05:00 PM", available: true }
   ]
+
+  const handleSelectCounselor = (counselor: Counselor) => {
+    if (counselor.available) {
+      setSelectedCounselor(counselor)
+      setStep(2)
+    }
+  }
+
+  const handleSelectTime = (time: string) => {
+    setSelectedTime(time)
+    setStep(3)
+  }
+
+  const handleBack = () => {
+    if (step > 1) {
+      setStep(step - 1)
+    }
+  }
 
   const handleBooking = () => {
     if (selectedCounselor && selectedDate && selectedTime) {
@@ -120,81 +139,75 @@ export default function Booking() {
                 </Card>
               </div>
 
-              {/* Counselors and Time Slots */}
+              {/* Step-based content */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Available Counselors */}
-                <Card className="glass-card border-0">
-                  <CardHeader>
-                    <CardTitle>Available Counselors</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Choose a counselor that specializes in your area of concern
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-4">
-                      {counselors.map((counselor) => (
-                        <div
-                          key={counselor.id}
-                          className={`p-4 rounded-xl border-2 cursor-pointer transition-all hover-glow ${
-                            selectedCounselor?.id === counselor.id
-                              ? 'border-primary bg-primary/5'
-                              : 'border-border/40 hover:border-primary/50'
-                          } ${!counselor.available ? 'opacity-50 cursor-not-allowed' : ''}`}
-                          onClick={() => counselor.available && setSelectedCounselor(counselor)}
-                        >
-                          <div className="flex items-center space-x-4">
-                            <Avatar className="h-16 w-16">
-                              <AvatarImage src={counselor.avatar} alt={counselor.name} />
-                              <AvatarFallback>{counselor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                            
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-1">
-                                <h3 className="font-semibold text-lg">{counselor.name}</h3>
-                                {!counselor.available && (
-                                  <Badge variant="secondary">Unavailable</Badge>
-                                )}
-                              </div>
-                              
-                              <p className="text-muted-foreground mb-2">{counselor.specialization}</p>
-                              
-                              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                                <div className="flex items-center space-x-1">
-                                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                  <span>{counselor.rating}</span>
+                {/* Step 1: Select Counselor */}
+                {step === 1 && (
+                  <Card className="glass-card border-0">
+                    <CardHeader>
+                      <CardTitle>Available Counselors</CardTitle>
+                      <p className="text-sm text-muted-foreground">
+                        Choose a counselor that specializes in your area of concern
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4">
+                        {counselors.map((counselor) => (
+                          <div
+                            key={counselor.id}
+                            className={`p-4 rounded-xl border-2 cursor-pointer transition-all hover-glow ${
+                              'border-border/40 hover:border-primary/50'
+                            } ${!counselor.available ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={() => handleSelectCounselor(counselor)}
+                          >
+                            <div className="flex items-center space-x-4">
+                              <Avatar className="h-16 w-16">
+                                <AvatarImage src={counselor.avatar} alt={counselor.name} />
+                                <AvatarFallback>{counselor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <h3 className="font-semibold text-lg">{counselor.name}</h3>
+                                  {!counselor.available && (
+                                    <Badge variant="secondary">Unavailable</Badge>
+                                  )}
                                 </div>
-                                <div className="flex items-center space-x-1">
-                                  <User className="h-4 w-4" />
-                                  <span>{counselor.experience} experience</span>
-                                </div>
-                                <div className="flex items-center space-x-1">
-                                  <MapPin className="h-4 w-4" />
-                                  <span>Online Session</span>
+                                <p className="text-muted-foreground mb-2">{counselor.specialization}</p>
+                                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                                  <div className="flex items-center space-x-1">
+                                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                                    <span>{counselor.rating}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <User className="h-4 w-4" />
+                                    <span>{counselor.experience} experience</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
-                {/* Time Slots */}
-                {selectedCounselor && (
+                {/* Step 2: Select Time */}
+                {step === 2 && selectedCounselor && (
                   <Card className="glass-card border-0">
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Clock className="h-5 w-5" />
-                        <span>Available Times</span>
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground">
-                        {selectedDate.toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center space-x-2">
+                          <Clock className="h-5 w-5" />
+                          <span>Available Times for {selectedCounselor.name}</span>
+                        </CardTitle>
+                        <Button variant="ghost" size="sm" onClick={handleBack}>
+                          <ArrowLeft className="h-4 w-4 mr-2" />
+                          Back
+                        </Button>
+                      </div>
+                      <p className="text-sm text-muted-foreground pt-2">
+                        {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                       </p>
                     </CardHeader>
                     <CardContent>
@@ -202,14 +215,10 @@ export default function Booking() {
                         {timeSlots.map((slot, index) => (
                           <Button
                             key={index}
-                            variant={selectedTime === slot.time ? "default" : "outline"}
-                            className={`${
-                              selectedTime === slot.time 
-                                ? 'wellness-gradient' 
-                                : 'glass-button'
-                            } ${!slot.available ? 'opacity-50 cursor-not-allowed' : 'hover-glow'}`}
+                            variant="outline"
+                            className={`glass-button ${!slot.available ? 'opacity-50 cursor-not-allowed' : 'hover-glow'}`}
                             disabled={!slot.available}
-                            onClick={() => slot.available && setSelectedTime(slot.time)}
+                            onClick={() => slot.available && handleSelectTime(slot.time)}
                           >
                             {slot.time}
                           </Button>
@@ -219,11 +228,17 @@ export default function Booking() {
                   </Card>
                 )}
 
-                {/* Booking Summary */}
-                {selectedCounselor && selectedTime && (
+                {/* Step 3: Booking Summary */}
+                {step === 3 && selectedCounselor && selectedTime && (
                   <Card className="glass-card border-0">
                     <CardHeader>
-                      <CardTitle>Booking Summary</CardTitle>
+                      <div className="flex items-center justify-between">
+                        <CardTitle>Booking Summary</CardTitle>
+                        <Button variant="ghost" size="sm" onClick={handleBack}>
+                          <ArrowLeft className="h-4 w-4 mr-2" />
+                          Back
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex justify-between">
@@ -232,9 +247,7 @@ export default function Booking() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Date:</span>
-                        <span className="font-medium">
-                          {selectedDate.toLocaleDateString()}
-                        </span>
+                        <span className="font-medium">{selectedDate.toLocaleDateString()}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Time:</span>
@@ -244,11 +257,6 @@ export default function Booking() {
                         <span className="text-muted-foreground">Duration:</span>
                         <span className="font-medium">50 minutes</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Session Type:</span>
-                        <span className="font-medium">Online Video Call</span>
-                      </div>
-                      
                       <div className="pt-4 border-t border-border/40">
                         <Dialog>
                           <DialogTrigger asChild>
@@ -261,16 +269,16 @@ export default function Booking() {
                               <DialogTitle>Booking Confirmed!</DialogTitle>
                             </DialogHeader>
                             <div className="space-y-4">
-                              <p>Your session has been successfully booked.</p>
+                              <p>Your session with {selectedCounselor.name} has been successfully booked.</p>
                               <div className="bg-muted/20 p-4 rounded-xl">
                                 <p className="font-medium">Next Steps:</p>
                                 <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                                  <li>• You'll receive a confirmation email shortly</li>
-                                  <li>• A calendar invite with video link will be sent</li>
-                                  <li>• You can reschedule up to 24 hours before</li>
+                                  <li>• You'll receive a confirmation email shortly.</li>
+                                  <li>• A calendar invite with the video link will be sent.</li>
+                                  <li>• You can reschedule up to 24 hours before the session.</li>
                                 </ul>
                               </div>
-                              <Button className="w-full wellness-gradient" onClick={handleBooking}>
+                              <Button className="w-full wellness-gradient" onClick={() => { handleBooking(); setStep(1); }}>
                                 Got it!
                               </Button>
                             </div>

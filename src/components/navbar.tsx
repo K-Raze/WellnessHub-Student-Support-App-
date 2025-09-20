@@ -1,9 +1,21 @@
 import { Link, useLocation } from "react-router-dom"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { ThemeToggle } from "./theme-toggle"
-import { Heart, Menu, UserPlus, LogIn } from "lucide-react"
+import { Heart, Menu, UserPlus, LogIn, PhoneCall, AlertTriangle } from "lucide-react"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { cn } from "@/lib/utils"
 
 export function Navbar() {
   const location = useLocation()
@@ -15,6 +27,50 @@ export function Navbar() {
   }
   
   const isActive = (path: string) => location.pathname === path
+
+  const handleCallHelpline = () => {
+    window.location.href = "tel:988"
+  }
+
+  const SOSDialog = ({ isMobile = false }) => (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        {isMobile ? (
+          <Button variant="destructive" className="w-full justify-start">
+            <PhoneCall className="h-4 w-4 mr-2" />
+            SOS Emergency
+          </Button>
+        ) : (
+          <Button variant="destructive" size="sm" className="hover-glow">
+            <PhoneCall className="h-4 w-4 mr-2" />
+            SOS
+          </Button>
+        )}
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="flex items-center gap-2 text-2xl text-destructive">
+            <AlertTriangle className="h-8 w-8" />
+            Emergency Confirmation
+          </AlertDialogTitle>
+          <AlertDialogDescription className="pt-2 text-base text-foreground/80">
+            You are about to contact the National Crisis and Suicide Lifeline. If you are in immediate danger, please call your local emergency number.
+            <br /><br />
+            <strong>Helpline: 988</strong>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="mt-4">
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleCallHelpline}
+            className={cn(buttonVariants({ variant: "destructive" }))}
+          >
+            Call Helpline
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
 
   const NavLinks = () => (
     <>
@@ -74,6 +130,10 @@ export function Navbar() {
           <div className="flex items-center space-x-2 sm:space-x-3">
             <ThemeToggle />
             
+            <div className="hidden sm:flex">
+              <SOSDialog />
+            </div>
+
             {/* Auth Buttons */}
             <div className="hidden sm:flex items-center space-x-2">
               <Link to="/login">
@@ -120,6 +180,10 @@ export function Navbar() {
                         Forum
                       </Link>
                     </div>
+                  </div>
+                  <hr className="border-border/30" />
+                  <div className="space-y-2" onClick={() => setIsOpen(false)}>
+                    <SOSDialog isMobile={true} />
                   </div>
                   <hr className="border-border/30" />
                   <div className="space-y-2">

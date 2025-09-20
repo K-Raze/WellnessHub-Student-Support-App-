@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Shield, Users, MessageCircle, Calendar, BookOpen } from "lucide-react"
 import { Navbar } from "@/components/navbar"
+import { SOSButton } from "@/components/sos"
 
 export default function Landing() {
   const features = [
@@ -114,6 +115,7 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* <SOSButton className="fixed bottom-8 right-8 z-50" /> */}
     </div>
   )
 }

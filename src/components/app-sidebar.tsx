@@ -1,21 +1,38 @@
 import { useState } from "react"
 import { 
-  MessageCircle, 
-  Calendar, 
-  BookOpen, 
-  Users,
   BarChart3,
+  Calendar,
+  MessageCircle,
+  Users,
   Settings,
   Heart,
   Home,
   LogIn,
   UserPlus,
   Moon,
-  Sun
+  Sun,
+  Flame,
+  PhoneCall,
+  AlertTriangle
 } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 
-import { useTheme } from "@/components/theme-provider" // Assuming you have a theme provider
+import { useTheme } from "@/components/theme-provider"
+import { StreakPopup } from "@/components/ui/streak"
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 import {
   Sidebar,
@@ -58,6 +75,12 @@ export function AppSidebar() {
       : "hover:bg-muted/50 text-muted-foreground hover:text-foreground"
 
   const { theme, setTheme } = useTheme()
+  const [isStreakOpen, setIsStreakOpen] = useState(false)
+  const streakCount = 7 // This would come from your app's state or API
+
+  const handleCallHelpline = () => {
+    window.location.href = "tel:988"
+  }
 
   return (
     <Sidebar className="theme-transition border-r-0">
@@ -137,6 +160,15 @@ export function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
+                    onClick={() => setIsStreakOpen(true)}
+                    className="hover:bg-muted/50 text-muted-foreground hover:text-foreground"
+                  >
+                    <Flame className="h-5 w-5 text-orange-500" />
+                    <span>Streak</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
                     onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                     className="hover:bg-muted/50 text-muted-foreground hover:text-foreground"
                   >
@@ -148,7 +180,7 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
 
-          <SidebarGroup className="pb-4">
+          <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
@@ -170,8 +202,52 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+
+          <SidebarGroup className="pb-4">
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton className="text-destructive hover:bg-destructive/10 hover:text-destructive font-medium">
+                        <PhoneCall className="h-5 w-5" />
+                        <span>SOS Emergency</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="flex items-center gap-2 text-2xl text-destructive">
+                        <AlertTriangle className="h-8 w-8" />
+                        Emergency Confirmation
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="pt-2 text-base text-foreground/80">
+                        You are about to contact the National Crisis and Suicide Lifeline. If you are in immediate danger, please call your local emergency number.
+                        <br /><br />
+                        <strong>Helpline: 988</strong>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="mt-4">
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleCallHelpline}
+                        className={cn(buttonVariants({ variant: "destructive" }))}
+                      >
+                        Call Helpline
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
         </div>
       </SidebarContent>
+      <StreakPopup
+        streakCount={streakCount}
+        isOpen={isStreakOpen}
+        onOpenChange={setIsStreakOpen}
+      />
     </Sidebar>
   )
 }

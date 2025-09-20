@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +9,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { Navbar } from "@/components/navbar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -17,7 +17,6 @@ import {
   VideoIcon, 
   Upload,
   FileText,
-  Plus,
   CheckCircle,
   AlertCircle,
   TrendingUp
@@ -46,7 +45,6 @@ interface Resource {
 }
 
 export default function CounsellorDashboard() {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date())
   const [appointments] = useState<Appointment[]>([
     {
       id: "1",
@@ -117,11 +115,6 @@ export default function CounsellorDashboard() {
     return apt.date.toDateString() === today.toDateString()
   })
 
-  const upcomingAppointments = appointments.filter(apt => {
-    const today = new Date()
-    return apt.date > today && apt.status === 'scheduled'
-  })
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled':
@@ -176,69 +169,74 @@ export default function CounsellorDashboard() {
             </div>
           </div>
 
-          <div className="p-6 max-w-7xl mx-auto space-y-8">
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="glass-card border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-wellness-primary/20 p-3 rounded-xl">
-                      <CalendarIcon className="h-6 w-6 text-wellness-primary" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">{todayAppointments.length}</p>
-                      <p className="text-sm text-muted-foreground">Today's Sessions</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+          <div className="p-6 max-w-7xl mx-auto">
+            <Tabs defaultValue="overview" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="resources">Resources</TabsTrigger>
+              </TabsList>
 
-              <Card className="glass-card border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-wellness-secondary/20 p-3 rounded-xl">
-                      <User className="h-6 w-6 text-wellness-secondary" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">24</p>
-                      <p className="text-sm text-muted-foreground">Active Students</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Overview Tab */}
+              <TabsContent value="overview" className="space-y-8">
+                {/* Stats Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <Card className="glass-card border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-wellness-primary/20 p-3 rounded-xl">
+                          <CalendarIcon className="h-6 w-6 text-wellness-primary" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">{todayAppointments.length}</p>
+                          <p className="text-sm text-muted-foreground">Today's Sessions</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              <Card className="glass-card border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-wellness-success/20 p-3 rounded-xl">
-                      <CheckCircle className="h-6 w-6 text-wellness-success" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">89%</p>
-                      <p className="text-sm text-muted-foreground">Session Completion</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  <Card className="glass-card border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-wellness-secondary/20 p-3 rounded-xl">
+                          <User className="h-6 w-6 text-wellness-secondary" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">24</p>
+                          <p className="text-sm text-muted-foreground">Active Students</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-              <Card className="glass-card border-0">
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-wellness-calm/20 p-3 rounded-xl">
-                      <TrendingUp className="h-6 w-6 text-wellness-calm" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold">4.9</p>
-                      <p className="text-sm text-muted-foreground">Average Rating</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <Card className="glass-card border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-wellness-success/20 p-3 rounded-xl">
+                          <CheckCircle className="h-6 w-6 text-wellness-success" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">89%</p>
+                          <p className="text-sm text-muted-foreground">Session Completion</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Calendar & Today's Appointments */}
-              <div className="lg:col-span-2 space-y-6">
+                  <Card className="glass-card border-0">
+                    <CardContent className="p-6">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-wellness-calm/20 p-3 rounded-xl">
+                          <TrendingUp className="h-6 w-6 text-wellness-calm" />
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold">4.9</p>
+                          <p className="text-sm text-muted-foreground">Average Rating</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
                 {/* Today's Schedule */}
                 <Card className="glass-card border-0">
                   <CardHeader>
@@ -252,7 +250,6 @@ export default function CounsellorDashboard() {
                             <AvatarImage src={appointment.studentAvatar} alt={appointment.studentName} />
                             <AvatarFallback>{appointment.studentName[0]}</AvatarFallback>
                           </Avatar>
-                          
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <h4 className="font-semibold">{appointment.studentName}</h4>
@@ -273,7 +270,6 @@ export default function CounsellorDashboard() {
                               <span>{appointment.duration} min</span>
                             </div>
                           </div>
-                          
                           <div className="flex space-x-2">
                             {appointment.status === 'scheduled' && (
                               <>
@@ -294,7 +290,6 @@ export default function CounsellorDashboard() {
                           </div>
                         </div>
                       ))}
-                      
                       {todayAppointments.length === 0 && (
                         <div className="text-center py-8 text-muted-foreground">
                           <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -304,68 +299,16 @@ export default function CounsellorDashboard() {
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
 
-                {/* Upcoming Appointments */}
+              {/* Resources Tab */}
+              <TabsContent value="resources" className="space-y-8">
                 <Card className="glass-card border-0">
-                  <CardHeader>
-                    <CardTitle>Upcoming Appointments</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {upcomingAppointments.slice(0, 3).map((appointment) => (
-                        <div key={appointment.id} className="flex items-center justify-between p-3 rounded-xl bg-muted/10">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={appointment.studentAvatar} alt={appointment.studentName} />
-                              <AvatarFallback>{appointment.studentName[0]}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium text-sm">{appointment.studentName}</p>
-                              <p className="text-xs text-muted-foreground">
-                                {appointment.date.toLocaleDateString()} at {appointment.time}
-                              </p>
-                            </div>
-                          </div>
-                          <Badge variant="secondary" className="text-xs">
-                            {appointment.type}
-                          </Badge>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Calendar & Resources */}
-              <div className="space-y-6">
-                {/* Calendar */}
-                <Card className="glass-card border-0">
-                  <CardHeader>
-                    <CardTitle>Calendar</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={(date) => date && setSelectedDate(date)}
-                      className="rounded-xl border-0"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Quick Actions */}
-                <Card className="glass-card border-0">
-                  <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button className="w-full wellness-gradient hover-glow justify-start">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Block Time Slot
-                    </Button>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>My Resources</CardTitle>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full glass-button justify-start">
+                        <Button variant="outline" className="glass-button">
                           <Upload className="h-4 w-4 mr-2" />
                           Upload Resource
                         </Button>
@@ -406,40 +349,29 @@ export default function CounsellorDashboard() {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button variant="outline" className="w-full glass-button justify-start">
-                      <FileText className="h-4 w-4 mr-2" />
-                      Session Notes
-                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {resources.map((resource) => (
+                        <div key={resource.id} className="p-4 rounded-xl bg-muted/20 hover-glow">
+                          <div className="flex items-start justify-between mb-2">
+                            <h4 className="font-semibold">{resource.title}</h4>
+                            <Badge variant="secondary" className="capitalize text-xs">
+                              {resource.type}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-3">{resource.description}</p>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{resource.downloads} downloads</span>
+                            <span>{resource.uploadDate.toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </CardContent>
                 </Card>
-              </div>
-            </div>
-
-            {/* Resources Section */}
-            <Card className="glass-card border-0">
-              <CardHeader>
-                <CardTitle>My Resources</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {resources.map((resource) => (
-                    <div key={resource.id} className="p-4 rounded-xl bg-muted/20 hover-glow">
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold">{resource.title}</h4>
-                        <Badge variant="secondary" className="capitalize text-xs">
-                          {resource.type}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-3">{resource.description}</p>
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{resource.downloads} downloads</span>
-                        <span>{resource.uploadDate.toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         </main>
       </div>
